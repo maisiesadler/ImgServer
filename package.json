@@ -1,6 +1,6 @@
 {
   "name": "imgserver",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A small js library for serving images",
   "main": "${workspaceRoot}/index.js",
   "scripts": {
