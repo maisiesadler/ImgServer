@@ -4,10 +4,22 @@ var path = require('path');
 var HashMap = require('hashmap').HashMap;
 const app = express();
 
-var imgServer = function(dir, port){
-    if (!dir){
-        throw new Error("Dir is undefined");
+var imgServer = function(settings){
+    if (settings === null || settings === undefined){
+        settings = {};
     }
+
+    var port, dir;
+    if (settings.dir === null || settings.dir === undefined){
+        throw new Error("Set working directory in settings. Example { dir: 'filepath', port: 3000 }");
+    }
+    if (settings.port === null || settings.port === undefined){
+        console.log("port is undefined, setting port 3000");
+        settings.port = 3000;
+    }
+
+    dir = settings.dir;
+    port = settings.port;
 
     var mime = {
         html: 'text/html',
@@ -84,7 +96,7 @@ var imgServer = function(dir, port){
         }
     });
 
-    this.start = function(){
+    this.start = function() {
         app.listen(port, function () {
             console.log('img-server is listening on port ' + port)
         });
