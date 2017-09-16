@@ -2,14 +2,14 @@
 A small js library for serving static files
 
 Supported types:
-    html: 'text/html',
-    txt: 'text/plain',
-    css: 'text/css',
-    gif: 'image/gif',
-    jpg: 'image/jpeg',
-    png: 'image/png',
-    svg: 'image/svg+xml',
-    js: 'application/javascript'
+> * .html 
+> * .txt
+> * .css
+> * .gif
+> * .jpg
+> * .png
+> * .svg
+> * .js
 
 ### Example:
 ```
