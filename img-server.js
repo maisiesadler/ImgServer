@@ -103,4 +103,4 @@ var imgServer = function(settings){
     };
 };
 
-exports.imgServer = imgServer;
+module.exports.imgServer = imgServer;
