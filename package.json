@@ -1,0 +1,25 @@
+{
+  "name": "imgserver",
+  "version": "1.0.0",
+  "description": "A small js library for serving images",
+  "main": "${workspaceRoot}/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maisiesadler/ImgServer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maisiesadler/ImgServer/issues"
+  },
+  "homepage": "https://github.com/maisiesadler/ImgServer#readme",
+  "dependencies": {
+    "express": "^4.15.4",
+    "fs": "0.0.1-security",
+    "hashmap": "^2.3.0",
+    "path": "^0.12.7"
+  }
+}
