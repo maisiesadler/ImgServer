@@ -19,3 +19,22 @@ var server = new imgServer({
 });
 server.start();
 ```
+
+Or, if you want to map multiple locations:
+
+```
+var server = new imgServer({
+    map: [
+        {
+            from: '/t',
+            to: filePath1
+        },
+        {
+            from: '/m',
+            to: filePath2
+        }
+    ],
+    port: 3000
+});
+server.start();
+```

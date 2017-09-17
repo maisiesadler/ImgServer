@@ -5,20 +5,19 @@ var HashMap = require('hashmap').HashMap;
 const app = express();
 
 var imgServer = function(settings){
-    if (settings === null || settings === undefined){
+    if (settings == null){
         settings = {};
     }
 
-    var port, dir;
-    if (settings.dir === null || settings.dir === undefined){
+    var port;
+    if (settings.dir == null && settings.map == null) {
         throw new Error("Set working directory in settings. Example { dir: 'filepath', port: 3000 }");
     }
-    if (settings.port === null || settings.port === undefined){
+    if (settings.port == null) {
         console.log("port is undefined, setting port 3000");
         settings.port = 3000;
     }
 
-    dir = settings.dir;
     port = settings.port;
 
     var mime = {
@@ -43,11 +42,11 @@ var imgServer = function(settings){
             text.push(chunk);
         });
         s.on('end', function() {
-            console.log("adding new img to cache: " + pathName);
+            console.log("adding new img to cache: " + file);
             console.log(text);
-            imgs.set(pathName, text);
+            imgs.set(file, text);
             fs.stat(file, function(err, stats){
-                cacheMetaData.set(pathName, stats);
+                cacheMetaData.set(file, stats);
             });
         });
         s.on('open', function () {
@@ -65,36 +64,55 @@ var imgServer = function(settings){
         res.send(s[0]);
     }
 
-    app.get('*', function (req, res) {
-        var file = path.join(dir, req.path);
-        var type = mime[path.extname(file).slice(1)] || 'text/plain';
-        res.set('Content-Type', type);
-
-        if (imgs.has(req.path)) {
-            fs.stat(file, function(err, stats){
-                if (err){
-                    console.log(err);
-                    serveFromCache(req.path, res);
-                } else {
-                    var oldStats = cacheMetaData.get(req.path);
-                    if (stats.mtime.toISOString() !== oldStats.mtime.toISOString()){
-                        serveFromFile(file, res, req.path);
-                    } else {
-                        serveFromCache(req.path, res);
-                    }
-                }
-            });
-        } else {
-            fs.stat(file, function(err, stats){
-                if (err){
-                    console.log(err);
-                    res.status(404).end('Not found');
-                } else {
-                    serveFromFile(file, res, req.path);
-                }
-            });
+    var serve = function(location, dir) {
+        var p = location;
+        if (!location.endsWith("/")) {
+            p += "/"
         }
-    });
+        p += "*";
+        console.log("listening on " + p + " for directory " + dir)
+        app.get(p, function (req, res) {
+            var requestUrl = req.url.replace(location, "");
+            var file = path.join(dir, requestUrl);
+            var type = mime[path.extname(file).slice(1)] || 'text/plain';
+            res.set('Content-Type', type);
+
+            if (imgs.has(file)) {
+                fs.stat(file, function(err, stats){
+                    if (err){
+                        console.log(err);
+                        serveFromCache(file, res);
+                    } else {
+                        var oldStats = cacheMetaData.get(file);
+                        if (stats.mtime.toISOString() !== oldStats.mtime.toISOString()) {
+                            serveFromFile(file, res, file);
+                        } else {
+                            serveFromCache(file, res);
+                        }
+                    }
+                });
+            } else {
+                fs.stat(file, function(err, stats){
+                    if (err){
+                        console.log(err);
+                        res.set('Content-Type', 'text/plain');
+                        res.status(404).end('Not found');
+                    } else {
+                        serveFromFile(file, res, file);
+                    }
+                });
+            }
+        });
+    };
+
+    if (settings.dir){
+        serve('/', settings.dir);
+    }
+    if (settings.map){
+        settings.map.forEach(m => {
+            serve(m.from, m.to);
+        }) 
+    }
 
     this.start = function() {
         app.listen(port, function () {
